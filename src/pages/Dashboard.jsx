@@ -57,7 +57,7 @@ export default function Dashboard() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-            Hello, {user?.firstName} {user?.lastName} 👋
+            Hello, {user?.firstName} {user?.lastName}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             Here is the list of available products.
@@ -180,7 +180,9 @@ export default function Dashboard() {
                         variant="outline"
                         size="sm"
                         className="h-7 text-xs px-3 cursor-pointer"
-                        onClick={() => navigate(`/dashboard/product/${product.id}`)}
+                        onClick={() =>
+                          navigate(`/dashboard/product/${product.id}`)
+                        }
                       >
                         View Detail
                       </Button>
