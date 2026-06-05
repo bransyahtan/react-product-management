@@ -24,9 +24,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   LayoutDashboard,
-  Package,
-  Tags,
-  History,
   LogOut,
   User,
   ShoppingBag,
@@ -39,28 +36,6 @@ export function AppSidebar() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
-  const menuItems = [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Produk",
-      url: "/products",
-      icon: Package,
-    },
-    {
-      title: "Kategori",
-      url: "/categories",
-      icon: Tags,
-    },
-    {
-      title: "Riwayat",
-      url: "/history",
-      icon: History,
-    },
-  ];
 
   const handleLogout = () => {
     Swal.fire({
@@ -108,30 +83,23 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent className="mt-2">
             <SidebarMenu>
-              {menuItems.map((item) => {
-                const isActive = location.pathname === item.url;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      tooltip={item.title}
-                      className={`w-full ${
-                        isActive
-                          ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
-                          : "text-zinc-600 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-800/40"
-                      }`}
-                    >
-                      <Link to={item.url} className="flex items-center gap-3">
-                        <item.icon className="h-4 w-4 shrink-0" />
-                        <span className="group-data-[state=collapsed]:hidden">
-                          {item.title}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === "/dashboard"}
+                  tooltip="Dashboard"
+                  className={`w-full ${
+                    location.pathname === "/dashboard"
+                      ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
+                      : "text-zinc-600 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-800/40"
+                  }`}
+                >
+                  <Link to="/dashboard" className="flex items-center gap-3">
+                    <LayoutDashboard className="h-4 w-4 shrink-0" />
+                    <span className="group-data-[state=collapsed]:hidden">Dashboard</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -161,9 +129,6 @@ export function AppSidebar() {
                     <div className="flex flex-col min-w-0 group-data-[state=collapsed]:hidden">
                       <span className="text-sm font-medium text-zinc-950 dark:text-zinc-50 truncate">
                         {user?.firstName} {user?.lastName}
-                      </span>
-                      <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                        Administrator
                       </span>
                     </div>
                   </div>
