@@ -1,58 +1,196 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { logoutUser } from "@/store/auth";
+import { fetchProducts } from "@/store/products";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { LogOut, User } from "lucide-react";
+import { Plus } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const LIMIT = 20;
 
 export default function Dashboard() {
   const dispatch = useDispatch();
   const { token, user } = useSelector((state) => state.auth);
+  const { products, total, isLoading, error } = useSelector(
+    (state) => state.products,
+  );
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(total / LIMIT);
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
-  };
+  useEffect(() => {
+    if (!token) return;
+    dispatch(fetchProducts({ limit: LIMIT, skip: (page - 1) * LIMIT }));
+  }, [dispatch, token, page]);
+
+  if (!token) return <Navigate to="/login" replace />;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] p-6">
-      <div className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 shadow-sm text-center space-y-6">
-        <div className="relative inline-block">
-          {user?.image ? (
-            <img
-              src={user.image}
-              alt={`${user.firstName} ${user.lastName}`}
-              className="w-24 h-24 rounded-full mx-auto border-4 border-zinc-100 dark:border-zinc-800 object-cover"
-            />
-          ) : (
-            <div className="w-24 h-24 rounded-full mx-auto bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
-              <User className="w-12 h-12" />
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Halo, {user?.firstName} {user?.lastName}!
+    <div className="space-y-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+            Hello, {user?.firstName} {user?.lastName} 👋
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Selamat datang di sistem manajemen produk dan inventaris.
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            Here is the list of available products.
           </p>
         </div>
-
-        <div className="pt-4">
-          <Button
-            variant="destructive"
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2"
-          >
-            <LogOut className="h-4 w-4" /> Keluar
-          </Button>
-        </div>
+        <Button className="shrink-0 flex items-center gap-2 cursor-pointer">
+          <Plus className="h-4 w-4" />
+          Add Product
+        </Button>
       </div>
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/20 p-4 text-sm text-red-600 dark:text-red-400">
+          {error}
+        </div>
+      )}
+
+      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-zinc-50 dark:bg-zinc-800/50">
+              <TableHead className="w-10">#</TableHead>
+              <TableHead>Product</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead className="text-right">Price</TableHead>
+              <TableHead className="text-right">Rating</TableHead>
+              <TableHead className="text-center">Stock</TableHead>
+              <TableHead className="text-center w-32">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading
+              ? Array.from({ length: LIMIT }).map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <Skeleton className="h-4 w-6" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+                        <Skeleton className="h-4 w-40" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-16 ml-auto" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-10 ml-auto" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-5 w-20 mx-auto rounded-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-8 w-20 mx-auto rounded-md" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              : products.map((product, index) => (
+                  <TableRow
+                    key={product.id}
+                    className="hover:bg-zinc-50 dark:hover:bg-zinc-800/40"
+                  >
+                    <TableCell className="text-zinc-400 text-xs">
+                      {(page - 1) * LIMIT + index + 1}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={product.thumbnail}
+                          alt={product.title}
+                          className="h-10 w-10 rounded-lg object-cover border border-zinc-100 dark:border-zinc-800"
+                        />
+                        <span className="font-medium text-sm text-zinc-900 dark:text-zinc-100 line-clamp-1">
+                          {product.title}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm capitalize text-zinc-500 dark:text-zinc-400">
+                      {product.category}
+                    </TableCell>
+                    <TableCell className="text-right text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                      ${product.price.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-right text-sm text-zinc-500 dark:text-zinc-400">
+                      ⭐ {product.rating}
+                    </TableCell>
+                    <TableCell className="text-center text-sm text-zinc-900 dark:text-zinc-100">
+                      {product.stock}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs px-3 cursor-pointer"
+                      >
+                        View Detail
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className={
+                  page === 1
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink
+                  isActive={page === i + 1}
+                  onClick={() => setPage(i + 1)}
+                  className="cursor-pointer"
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                className={
+                  page === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }
