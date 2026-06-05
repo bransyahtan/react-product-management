@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { fetchProducts } from "@/store/products";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, Search } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -26,18 +27,28 @@ const LIMIT = 20;
 
 export default function Dashboard() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { token, user } = useSelector((state) => state.auth);
   const { products, total, isLoading, error } = useSelector(
     (state) => state.products,
   );
 
   const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("");
+  const [activeQuery, setActiveQuery] = useState("");
   const totalPages = Math.ceil(total / LIMIT);
+
+  const handleSearch = () => {
+    setPage(1);
+    setActiveQuery(query);
+  };
 
   useEffect(() => {
     if (!token) return;
-    dispatch(fetchProducts({ limit: LIMIT, skip: (page - 1) * LIMIT }));
-  }, [dispatch, token, page]);
+    dispatch(
+      fetchProducts({ limit: LIMIT, skip: (page - 1) * LIMIT, q: activeQuery }),
+    );
+  }, [dispatch, token, page, activeQuery]);
 
   if (!token) return <Navigate to="/login" replace />;
 
@@ -63,6 +74,31 @@ export default function Dashboard() {
           {error}
         </div>
       )}
+
+      <div className="space-y-1.5">
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+          <Input
+            placeholder="Search products..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            className="pl-9 pr-20"
+          />
+          <button
+            onClick={handleSearch}
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-7 px-3 rounded-md bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 text-xs font-medium hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
+          >
+            Search
+          </button>
+        </div>
+        {activeQuery && (
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 pl-1">
+            {total} result{total !== 1 ? "s" : ""} for &ldquo;{activeQuery}
+            &rdquo;
+          </p>
+        )}
+      </div>
 
       <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
         <Table>
@@ -144,6 +180,7 @@ export default function Dashboard() {
                         variant="outline"
                         size="sm"
                         className="h-7 text-xs px-3 cursor-pointer"
+                        onClick={() => navigate(`/dashboard/product/${product.id}`)}
                       >
                         View Detail
                       </Button>

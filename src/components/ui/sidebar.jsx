@@ -165,7 +165,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+          className="w-(--sidebar-width) bg-sidebar p-0 gap-0 text-sidebar-foreground [&>button]:hidden"
           style={{
             "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
           }}
@@ -175,7 +175,7 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden">{children}</div>
         </SheetContent>
       </Sheet>
     );
@@ -332,12 +332,14 @@ function SidebarSeparator({ className, ...props }) {
 }
 
 function SidebarContent({ className, ...props }) {
+  const { isMobile } = useSidebar();
   return (
     <div
       data-slot="sidebar-content"
       data-sidebar="content"
       className={cn(
         "no-scrollbar flex min-h-0 flex-1 flex-col gap-0 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        isMobile && "shrink-0 overflow-visible",
         className,
       )}
       {...props}

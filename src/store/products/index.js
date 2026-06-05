@@ -1,5 +1,5 @@
 import productsReducer from "./productsSlice";
-import { fetchProducts } from "./productsThunk";
+import { fetchProducts, updateProduct, deleteProduct } from "./productsThunk";
 
-export { fetchProducts };
+export { fetchProducts, updateProduct, deleteProduct };
 export default productsReducer;
