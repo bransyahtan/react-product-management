@@ -1,16 +1,134 @@
-# React + Vite
+# StockManager — React Product Management
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikasi manajemen produk & inventaris berbasis web yang dibangun dengan React + Vite. Data produk diambil dari [DummyJSON API](https://dummyjson.com).
 
-Currently, two official plugins are available:
+## Screenshots
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Halaman Login
 
-## React Compiler
+![Login](./public/login.png)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Halaman Utama
 
-## Expanding the ESLint configuration
+![Home](./public/home.png)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Dashboard Produk
+
+![Dashboard](./public/dashboard.png)
+
+### Detail Produk
+
+![Detail Produk](./public/detail_product.png)
+
+---
+
+## Fitur
+
+- **Autentikasi** — Login & logout menggunakan JWT via DummyJSON Auth API
+- **Daftar Produk** — Tabel produk dengan pencarian berdasarkan nama
+- **Detail Produk** — Informasi lengkap produk: gambar, harga, diskon, stok, review, dimensi, garansi, dll.
+- **Edit Produk** — Update judul dan detail produk
+- **Hapus Produk** — Konfirmasi sebelum menghapus
+- **Tambah Produk** — Form tambah produk baru
+- **Profil Pengguna** — Menampilkan data profil yang sedang login
+- **Responsive** — Sidebar mobile-friendly
+
+---
+
+## Tech Stack
+
+| Kategori         | Library                     |
+| ---------------- | --------------------------- |
+| Framework        | React 19 + Vite 8           |
+| State Management | Redux Toolkit + React-Redux |
+| Routing          | React Router DOM v7         |
+| UI Components    | shadcn/ui (Radix UI)        |
+| Styling          | Tailwind CSS v4             |
+| HTTP Client      | Axios                       |
+| Icons            | Lucide React                |
+| Alert Dialog     | SweetAlert2                 |
+| Font             | Geist (Variable)            |
+
+---
+
+## Cara Menjalankan
+
+### Prasyarat
+
+- Node.js >= 18
+- npm >= 9
+
+### Instalasi
+
+```bash
+# Clone repository
+git clone <repo-url>
+cd react-product-management
+
+# Install dependencies
+npm install
+```
+
+### Konfigurasi Environment
+
+Salin file `.env.example` menjadi `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Isi variabel yang dibutuhkan:
+
+```env
+VITE_API_BASE_URL=https://dummyjson.com
+```
+
+### Menjalankan Development Server
+
+```bash
+npm run dev
+```
+
+Buka [http://localhost:5173](http://localhost:5173) di browser.
+
+### Build Production
+
+```bash
+npm run build
+```
+
+### Preview Build
+
+```bash
+npm run preview
+```
+
+---
+
+## Struktur Project
+
+```
+src/
+├── api/              # Konfigurasi Axios instance
+├── components/
+│   ├── common/       # Header, Footer, AppSidebar
+│   └── ui/           # Komponen UI (shadcn)
+├── hooks/            # Custom hooks (useIsMobile, dll.)
+├── layout/           # AppLayout
+├── lib/              # Utility functions
+├── pages/            # Halaman: Home, Login, Dashboard, ProductDetail, Profile
+└── store/            # Redux store: auth, products, profile
+```
+
+---
+
+## Akun Demo
+
+Gunakan akun berikut untuk login (via DummyJSON):
+
+| Field    | Value        |
+| -------- | ------------ |
+| Username | `emilys`     |
+| Password | `emilyspass` |
+
+> Semua operasi (tambah, edit, hapus) bersifat simulasi — data tidak benar-benar tersimpan di server karena menggunakan DummyJSON yang merupakan fake REST API.
