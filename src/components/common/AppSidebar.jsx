@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "@/store/auth";
+import { clearProfile } from "@/store/profile";
 import {
   Sidebar,
   SidebarContent,
@@ -74,6 +75,7 @@ export function AppSidebar() {
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(logoutUser());
+        dispatch(clearProfile());
         Swal.fire({
           title: "Keluar!",
           text: "Anda telah berhasil keluar.",
@@ -138,7 +140,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-zinc-100 dark:border-zinc-800/50 p-4 group-data-[state=collapsed]:p-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
