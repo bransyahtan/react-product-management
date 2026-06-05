@@ -45,3 +45,17 @@ export const deleteProduct = createAsyncThunk(
     }
   }
 );
+
+export const addProduct = createAsyncThunk(
+  "products/addProduct",
+  async (productData, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/products/add", productData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Gagal menambahkan produk"
+      );
+    }
+  }
+);

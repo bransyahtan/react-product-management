@@ -1,8 +1,7 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
-import { Package, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const Home = () => {
   const { token } = useSelector((state) => state.auth);
@@ -14,7 +13,8 @@ export const Home = () => {
           Sistem Manajemen Produk & Inventaris Modern
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 text-lg">
-          Kelola stok barang, pantau status produk, dan tingkatkan efisiensi operasional bisnis Anda melalui satu platform terintegrasi.
+          Kelola stok barang, pantau status produk, dan tingkatkan efisiensi
+          operasional bisnis Anda melalui satu platform terintegrasi.
         </p>
         <div className="flex items-center justify-center gap-4 pt-4">
           {token ? (

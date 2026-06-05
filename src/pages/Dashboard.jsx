@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
-import { fetchProducts } from "@/store/products";
+import { fetchProducts, addProduct } from "@/store/products";
+import Swal from "sweetalert2";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +44,105 @@ export default function Dashboard() {
     setActiveQuery(query);
   };
 
+  const handleAddProduct = () => {
+    Swal.fire({
+      title: "Add New Product",
+      html: `
+        <div class="space-y-4 text-left p-2">
+          <div>
+            <label class="block text-xs font-semibold text-zinc-500 mb-1 dark:text-zinc-300">Product Title</label>
+            <input id="swal-title" class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-50" placeholder="e.g. BMW Pencil">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-zinc-700 dark:text-zinc-300">Brand</label>
+            <input id="swal-brand" class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-50" placeholder="e.g. BMW">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-zinc-700 dark:text-zinc-300">Category</label>
+            <input id="swal-category" class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-50" placeholder="e.g. office-supplies">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold mb-1 text-zinc-700 dark:text-zinc-300">Price ($)</label>
+              <input id="swal-price" type="number" step="0.01" class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-50" placeholder="e.g. 9.99">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1 text-zinc-700 dark:text-zinc-300">Stock</label>
+              <input id="swal-stock" type="number" class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-50" placeholder="e.g. 50">
+            </div>
+          </div>
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: "Add Product",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#18181b",
+      cancelButtonColor: "#71717a",
+      preConfirm: () => {
+        const title = document.getElementById("swal-title").value;
+        const brand = document.getElementById("swal-brand").value;
+        const category = document.getElementById("swal-category").value;
+        const price = parseFloat(document.getElementById("swal-price").value);
+        const stock = parseInt(document.getElementById("swal-stock").value);
+
+        if (!title.trim()) {
+          Swal.showValidationMessage("Title is required");
+          return false;
+        }
+        if (!category.trim()) {
+          Swal.showValidationMessage("Category is required");
+          return false;
+        }
+        if (isNaN(price) || price < 0) {
+          Swal.showValidationMessage("Please enter a valid price");
+          return false;
+        }
+        if (isNaN(stock) || stock < 0) {
+          Swal.showValidationMessage("Please enter a valid stock amount");
+          return false;
+        }
+
+        return {
+          title,
+          brand,
+          category,
+          price,
+          stock,
+          thumbnail: "https://dummyjson.com/image/150",
+          rating: 0,
+        };
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          Swal.fire({
+            title: "Adding product...",
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+          await dispatch(addProduct(result.value)).unwrap();
+          Swal.fire({
+            title: "Added!",
+            text: "New product has been successfully added.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        } catch (err) {
+          console.error(err);
+          Swal.fire({
+            title: "Error!",
+            text: err || "Failed to add new product.",
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     if (!token) return;
     dispatch(
@@ -63,18 +163,19 @@ export default function Dashboard() {
             Here is the list of available products.
           </p>
         </div>
-        <Button className="shrink-0 flex items-center gap-2 cursor-pointer">
+        <Button
+          onClick={handleAddProduct}
+          className="shrink-0 flex items-center gap-2 cursor-pointer"
+        >
           <Plus className="h-4 w-4" />
           Add Product
         </Button>
       </div>
-
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/20 p-4 text-sm text-red-600 dark:text-red-400">
           {error}
         </div>
       )}
-
       <div className="space-y-1.5">
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
@@ -87,7 +188,7 @@ export default function Dashboard() {
           />
           <button
             onClick={handleSearch}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-7 px-3 rounded-md bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 text-xs font-medium hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
+            className="cursor-pointer absolute right-1.5 top-1/2 -translate-y-1/2 h-7 px-3 rounded-md bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 text-xs font-medium hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
           >
             Search
           </button>

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchProducts, updateProduct, deleteProduct } from "./productsThunk";
+import { fetchProducts, updateProduct, deleteProduct, addProduct } from "./productsThunk";
 
 const initialState = {
   products: [],
@@ -14,7 +14,6 @@ const productsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // fetchProducts
       .addCase(fetchProducts.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -28,7 +27,6 @@ const productsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      // updateProduct
       .addCase(updateProduct.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -46,7 +44,6 @@ const productsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      // deleteProduct
       .addCase(deleteProduct.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -61,6 +58,17 @@ const productsSlice = createSlice({
         }
       })
       .addCase(deleteProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(addProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(addProduct.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(addProduct.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

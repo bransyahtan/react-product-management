@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "@/store/auth";
@@ -35,7 +34,6 @@ export function AppSidebar() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-
 
   const handleLogout = () => {
     Swal.fire({
@@ -96,7 +94,9 @@ export function AppSidebar() {
                 >
                   <Link to="/dashboard" className="flex items-center gap-3">
                     <LayoutDashboard className="h-4 w-4 shrink-0" />
-                    <span className="group-data-[state=collapsed]:hidden">Dashboard</span>
+                    <span className="group-data-[state=collapsed]:hidden">
+                      Dashboard
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
