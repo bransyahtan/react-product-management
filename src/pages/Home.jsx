@@ -7,7 +7,7 @@ export const Home = () => {
   const { token } = useSelector((state) => state.auth);
 
   return (
-    <div className="flex min-h-[80vh] flex-col bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-zinc-950">
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto space-y-6">
         <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-5xl">
           Sistem Manajemen Produk & Inventaris Modern
