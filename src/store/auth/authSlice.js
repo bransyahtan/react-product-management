@@ -1,9 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { loginUser } from "./authThunk";
 
+const isTokenExpired = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+};
+
+const storedToken = localStorage.getItem("accessToken");
+const tokenValid = storedToken && !isTokenExpired(storedToken);
+
+if (!tokenValid && storedToken) {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("firstName");
+  localStorage.removeItem("lastName");
+  localStorage.removeItem("image");
+}
+
 const initialState = {
-  token: localStorage.getItem("accessToken") || null,
-  user: localStorage.getItem("accessToken")
+  token: tokenValid ? storedToken : null,
+  user: tokenValid
     ? {
         firstName: localStorage.getItem("firstName"),
         lastName: localStorage.getItem("lastName"),
